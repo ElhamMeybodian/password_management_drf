@@ -1,7 +1,7 @@
 from django.db import models
 
 
-# Create your models here.
+
 class UserProfile(models.Model):
     username = models.CharField('username', max_length=50)
 
