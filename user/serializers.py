@@ -9,7 +9,6 @@ class UserPasswordSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 
-
 class CreateUserSerializer(serializers.ModelSerializer):
     password = serializers.CharField(max_length=100, write_only=True)
 
@@ -19,25 +18,19 @@ class CreateUserSerializer(serializers.ModelSerializer):
         extra_kwargs = {'password': {'write_only': True}}
 
     def validate_username(self, validated_data):
-        # username = validated_data['username']
-        print('######################')
         try:
             UserProfile.objects.get(username=validated_data)
             raise ValidationError('User is exist')
         except UserProfile.DoesNotExist:
             return validated_data
 
-
     def create(self, validated_data):
-        print('*********************')
-        print('v', validated_data)
         user = UserProfile.objects.create(
             username=validated_data['username'],
 
         )
 
         u = UserPassword.objects.create(password=validated_data['password'], user=user)
-        print('u', u)
         return user
 
 
@@ -53,7 +46,6 @@ class ChangePasswordSerializer(serializers.ModelSerializer):
                         }
 
     def validate_username(self, validated_data):
-        print('######################')
         try:
             UserProfile.objects.get(username=validated_data)
             return validated_data
@@ -61,19 +53,14 @@ class ChangePasswordSerializer(serializers.ModelSerializer):
             raise ValidationError('User is not exist')
 
     def create(self, validated_data):
-        print('*********************')
-        print('v', validated_data)
         user = UserProfile.objects.get(username=validated_data['username'])
         pass_user = UserPassword.objects.filter(user=user)
-        # passwords = set(passwords)
-        # print('ppp', passwords)
         for u in pass_user:
             if validated_data['password'] in u.password:
                 password_u = UserPassword.objects.create(
                     password=validated_data['password_new'],
                     user=user
                 )
-                print('password', password_u)
                 return password_u
 
         raise ValidationError('password wrong!!!')
